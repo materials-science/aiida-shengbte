@@ -1,0 +1,62 @@
+{
+    "name": "aiida-shengbte",
+    "author": "PorYoung",
+    "author_email": "poryoung@outlook.com",
+    "description": "aiida plugin for ShengBTE",
+    "url": "https://github.com/PorYoung/aiida-shengbte",
+    "license": "MIT",
+    "classifiers": [
+        "Programming Language :: Python",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Framework :: AiiDA"
+    ],
+    "version": "0.1.0a0",
+    "entry_points": {
+        "aiida.data": [
+            "diff = aiida_shengbte.data:DiffParameters"
+        ],
+        "aiida.calculations": [
+            "diff = aiida_shengbte.calculations.calculations:DiffCalculation",
+            "shengbte = aiida_shengbte.calculations.shengbte:ShengbteCalculation"
+
+        ],
+        "aiida.parsers": [
+            "diff = aiida_shengbte.parsers.diff:DiffParser",
+            "shengbte = aiida_shengbte.parsers.shengbte:ShengbteParser"
+        ],
+        "aiida.cmdline.data": [
+            "diff = aiida_shengbte.cli:data_cli"
+        ]
+    },
+    "include_package_data": true,
+    "setup_requires": ["reentry"],
+    "reentry_register": true,
+    "install_requires": [
+        "aiida-core>=1.1.0,<2.0.0",
+        "six",
+        "voluptuous"
+    ],
+    "extras_require": {
+        "testing": [
+            "pgtest~=1.3.1",
+            "wheel~=0.31",
+            "coverage",
+            "pytest~=3.6,<5.0.0",
+            "pytest-cov"
+        ],
+        "pre-commit": [
+            "astroid==2.2.5",
+            "pre-commit==1.20.0",
+            "prospector==1.1.7",
+            "pylint==2.3.1"
+        ],
+        "docs": [
+            "sphinx",
+            "sphinxcontrib-contentui",
+            "sphinxcontrib-details-directive; python_version>='3.0'",
+            "sphinx-rtd-theme"
+        ]
+    }
+}
