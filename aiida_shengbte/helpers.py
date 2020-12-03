@@ -10,11 +10,13 @@ available in the PATH on almost any UNIX system.
 import tempfile
 import shutil
 
+from aiida.plugins.factories import DataFactory
+
 LOCALHOST_NAME = 'localhost-test'
 
 executables = {
-    # 'shengbte': 'diff',
     'shengbte': 'bash',
+    'thirdorder_vasp': '/home/por/aiida/thirdorder/thirdorder_vasp.py'
 }
 
 
@@ -25,18 +27,20 @@ def get_path_to_executable(executable):
     :return: path to executable
     :rtype: str
     """
-    path = shutil.which(executable)
-    if path is None:
-        raise ValueError(
-            "'{}' executable not found in PATH.".format(executable))
-    return path
+    if ''.find('/') == -1:
+        path = shutil.which(executable)
+        if path is None:
+            raise ValueError("'{}' executable not found in PATH.".format(executable))
+        return path
+    else:
+        return executable
 
 
 def get_computer(name=LOCALHOST_NAME, workdir=None):
     """Get AiiDA computer.
     Loads computer 'name' from the database, if exists.
     Sets up local computer 'name', if it isn't found in the DB.
-    
+
     :param name: Name of computer to load or set up.
     :param workdir: path to work directory 
         Used only when creating a new computer.
@@ -69,7 +73,7 @@ def get_computer(name=LOCALHOST_NAME, workdir=None):
 def get_code(entry_point, computer):
     """Get local code.
     Sets up code for given entry point on given computer.
-    
+
     :param entry_point: Entry point of calculation plugin
     :param computer: (local) AiiDA computer
     :return: The code node 
@@ -95,3 +99,30 @@ def get_code(entry_point, computer):
     )
     code.label = executable
     return code.store()
+
+
+def get_test_structure():
+    """
+    Set up Si primitive cell
+
+    fcc Si:
+       3.9
+       0.5000000000000000    0.5000000000000000    0.0000000000000000
+       0.0000000000000000    0.5000000000000000    0.5000000000000000
+       0.5000000000000000    0.0000000000000000    0.5000000000000000
+    Si
+       1
+    Cartesian
+    0.0000000000000000  0.0000000000000000  0.0000000000000000
+
+    """
+    import numpy as np
+    structure_data = DataFactory('structure')
+    alat = 3.9
+    lattice = np.array([[.5, .5, 0], [0, .5, .5], [.5, 0, .5]]) * alat
+    structure = structure_data(cell=lattice)
+    positions = [[0.0, 0.0, 0.0]]
+    for pos_direct in positions:
+        pos_cartesian = np.dot(pos_direct, lattice)
+        structure.append_atom(position=pos_cartesian, symbols='Si')
+    return structure

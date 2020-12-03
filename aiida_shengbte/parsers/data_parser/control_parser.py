@@ -132,6 +132,9 @@ class ControlParser(object):
             self.__class__.__name__) if logger is None else logger
         self.control = data
 
+    def _flat_vector(self, vec, sp=' '):
+        return sp.join(str(i) for i in vec)
+
     def validate_input(self):
         valid_control = {}
 
@@ -167,15 +170,21 @@ class ControlParser(object):
                         valid_inner[inner_key] = _attr['default']
             valid_control[key] = valid_inner
 
+        # arrange in order
+        # ? only available in python version>=3.6
+        valid_dict = {}
+        for key in self._CONTROL:
+            if key not in valid_control:
+                self._logger.error(f'key `{key}` is not in CONTRL')
+                return self.exit_codes.ERROR_KEY_IN_INPUT
+            valid_dict[key] = valid_control[key]
+
         # orientations is mandatory unless norientations == 0
         if valid_control['allocations']['norientations'] != 0 and 'orientations' not in valid_control['crystal']:
             self._logger.error(
                 'key `orientations` in CONTRL.crystal is mandatory when `norientations` in CONTRL.norientations is not zero.')
             raise RuntimeError('ERROR_KEY_IN_INPUT')
-        self.valid_control = valid_control
-
-    def _flat_vector(self, vec, sp=' '):
-        return sp.join(str(i) for i in vec)
+        self.valid_control = valid_dict
 
     def write_control(self, dist):
         import numpy as np

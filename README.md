@@ -85,6 +85,10 @@ verdi quicksetup  # better to set up a new profile
 verdi plugin list aiida.calculations  # should now show your calclulation plugins
 ```
 
+### ShengBTE
+
+[ShengBTE 软件编译方法](https://yh-phys.github.io/2020/09/04/ShengBTE-install/)
+
 ## Usage
 
 Here goes a complete example of how to submit a test calculation using this plugin.
@@ -117,54 +121,144 @@ pytest -v  # discover and run all tests
 
 ### input
 
+dict validator
+
 ```py
-{
-    "allocations": {
-        "nelements": (integer, mandatory),
-        "natoms": (integer, mandatory),
-        "ngrid": (integer, 3, mandatory),
-        "norientations": (integer, default=0)
+_CONTROL = {
+    'allocations': {
+        'nelements': {
+            'type': int,
+            'mandatory': True
+        },
+        'natoms': {
+            'type': int,
+            'mandatory': True
+        },
+        'ngrid': {
+            # <len 3>
+            'type': list,
+            'mandatory': True
+        },
+        'norientations': {
+            'type': int,
+            'default': 0
+        }
     },
-    "crystal":{
-        "lfactor": (real, nm, default=1.0),
-        "lattvec": (real, 3 x 3, mandatory),
-        "types": (integer, natoms, mandatory),
-        "elements": (string, nelements, mandatory),
-        "positions": (real, 3 x natoms, mandatory),
-        "masses": (real, nelements, g/mol, default=automatic),
-        "gfactors": (real, nelements, default=automatic),
-        "epsilon": (real, 3 x 3, &Epsilon;<sub>0</sub>, default=1),
-        "born": (real, 3 x 3 x natoms, e, default=0),
-        "scell": (integer, 3, mandatory),
-        "orientations": (integer, 3 x norientations, mandatory unless norientations==0)
+    'crystal': {
+        'lfactor': {
+            'type': float,
+            'default': 1.0
+        },
+        'lattvec': {
+            # <3*3>
+            'type': list,
+            'mandatory': True
+        },
+        'types': {
+            # <len natoms>
+            'type': list,
+            'mandatory': True
+        },
+        'elements': {
+            # <len nelements>
+            'type': list,
+            'mandatory': True
+        },
+        'positions': {
+            # <3 * natoms>
+            'type': list,
+            'mandatory': True
+        },
+        'masses': {
+            'type': float
+        },
+        'gfactors': {
+            'type': float
+        },
+        'epsilon': {
+            # <3 * 3>
+            'type': list,
+        },
+        'born': {
+            # <3 * 3 * natoms>
+            'type': list,
+        },
+        'scell': {
+            # <len 3>
+            'type': list,
+            'mandatory': True
+        },
+        'orientations': {
+            # <3 * norientations> mandatory unless norientations == 0
+            'type': list,
+            # 'mandatory': True
+        }
     },
-    "parameters":{
-        "T": (real, K),
-        # T_min,T_max,T_step (real, K)
-        "omega_max": (real, rad/ps, default=1.e100),
-        "scalebroad": (real, default=1.0),
-        "rmin": (real, nm, default=5.0),
-        "rmax": (real, nm, default=505.0),
-        "dr": (real, nm, default=100.0),
-        "maxiter": (integer, default=1000),
-        "nticks": (integer, default=100),
-        "eps": (real, default=10<sup>-5</sup>)
+    'parameters': {
+        'T': {},
+        'T_min': {},
+        'T_max': {},
+        'T_step': {},
+        'omega_max': {
+            'default': 1.e100
+        },
+        'scalebroad': {
+            'default': 1.0
+        },
+        'rmin': {
+            'default': 5.0
+        },
+        'rmax': {
+            'default': 505.0
+        },
+        'dr': {
+            'default': 100.0
+        },
+        'maxiter': {
+            'default': 1000
+        },
+        'nticks': {
+            'default': 100
+        },
+        'eps': {
+            'default': 1.e-5
+        },
     },
-    "flags": {
-        "nonanalytic": (logical, default=.true.),
-        "convergence": (logical, default=.true.),
-        "isotopes": (logical, default=.true.),
-        "autoisotopes": (logical, default=.true.),
-        "nanowires": (logical, default=.false.),
-        "onlyharmonic": (logical, default=.false.),
-        "espresso": (logical, default=.false.)
+    'flags': {
+        'nonanalytic': {
+            'default': True
+        },
+        'convergence': {
+            'default': True
+        },
+        'isotopes': {
+            'default': True
+        },
+        'autoisotopes': {
+            'default': True
+        },
+        'nanowires': {
+            'default': False
+        },
+        'onlyharmonic': {
+            'default': False
+        },
+        'espresso': {
+            'default': False
+        }
     }
 }
 ```
 
 ### dev docs
 
-#### Exit code conventions
+#### Notes
+
+##### Retrieve List
+
+[About Retrieve List of CalcJob](https://aiida.readthedocs.io/projects/aiida-core/en/latest/_modules/aiida/common/datastructures.html?highlight=retrieve_list#)
+
+##### Exit code conventions
 
 -   0 - 99: Reserved for internal use by aiida-core
 
@@ -177,6 +271,77 @@ pytest -v  # discover and run all tests
 -   For any other exit codes, one can use the integers from 400 and up.
 
 See the [developer guide](http://aiida-shengbte.readthedocs.io/en/latest/developer_guide/index.html) for more information.
+
+#### Phonopy Workflow
+
+##### Installation
+
+1. aiida container
+
+    ```py
+
+    ```
+
+2. vasp container(or other remote container)
+    1. clone phono3py repository
+    1. create `setup_mkl.py` file in phono3py repository
+    1. `pip install -e .`
+
+##### Inputs
+
+##### Outputs
+
+1. force_constants
+
+    - type: `ArrayData`
+    - `get_array('force_constants')` return force constants array
+    - `get_array(p2s_map)`
+    - `phonopy.fileIO.write_FORCE_CONSTANTS( force_constants, filename='FORCE_CONSTANTS', p2s_map=None,)`
+
+2. nac_params
+    - type: `ArrayData`
+    - `get_array('epsilon')`
+    - `get_array('born_charges')`
+
+#### ThirdOrder
+
+##### Inputs
+
+-   VASP
+    1. require `POSCAR`
+    2. `PhonopyWorkChainNode.outputs.primitive.get_ase()` return ase Atom Object
+    3. `ase.write('POSCAR','vasp')`
+
+##### Outputs
+
+#### Issues
+
+1. ShengBTE 真实环境计算流程（如改变温度）
+2. 计算结果的存储
+
+    - 分别就地存储
+    - [x] retrieve all results by aiida
+
+3. Get the real path of nodes in aiida
+
+[ref](https://aiida.readthedocs.io/projects/aiida-core/en/latest/_modules/aiida/backends/general/migrations/utils.html?highlight=repository#)
+
+```py
+def get_node_repository_sub_folder(uuid):
+    """Return the absolute path to the sub folder `path` within the repository of the node with the given UUID.
+
+    :param uuid: UUID of the node
+    :return: absolute path to node repository folder, i.e `/some/path/repository/node/12/ab/c123134-a123/path`
+    """
+    from aiida.manage.configuration import get_profile
+
+    uuid = str(uuid)
+
+    repo_dirpath = os.path.join(get_profile().repository_path, 'repository')
+    node_dirpath = os.path.join(repo_dirpath, 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
+
+    return node_dirpath
+```
 
 ## License
 
