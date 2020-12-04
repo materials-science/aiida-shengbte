@@ -17,11 +17,16 @@
 		"aiida.data": ["diff = aiida_shengbte.data:DiffParameters"],
 		"aiida.calculations": [
 			"shengbte.shengbte = aiida_shengbte.calculations.shengbte:ShengbteCalculation",
-			"shengbte.thirdorder_sow = aiida_shengbte.calculations.thirdorder:ThirdorderSowCalculation"
+			"shengbte.thirdorder_sow = aiida_shengbte.calculations.thirdorder:ThirdorderSowCalculation",
+			"shengbte.thirdorder_reap = aiida_shengbte.calculations.thirdorder:ThirdorderReapCalculation"
+		],
+		"aiida.workflows": [
+			"shengbte.thirdorder = aiida_shengbte.workflows.thirdorder:ThirdorderWorkChain"
 		],
 		"aiida.parsers": [
 			"shengbte = aiida_shengbte.parsers.shengbte:ShengbteParser",
-			"thirdorder_sow = aiida_shengbte.parsers.thirdorder:ThirdorderSowParser"
+			"thirdorder_sow = aiida_shengbte.parsers.thirdorder:ThirdorderSowParser",
+			"thirdorder_reap = aiida_shengbte.parsers.thirdorder:ThirdorderReapParser"
 		],
 		"aiida.cmdline.data": ["diff = aiida_shengbte.cli:data_cli"]
 	},

@@ -12,8 +12,7 @@ from aiida.orm import Bool
 
 class BaseCalculation(CalcJob):
     """
-    A basic plugin for calculating force constants using Phonopy.
-    Requirement: the node should be able to import phonopy if NAC is used
+    A basic plugin.
     """
 
     _DEFAULT_METADATA_RESOURCES = {

@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 """Run a test calculation on localhost.
 
 Usage: ./example_01.py
 """
-import logging
 from os import path
 from aiida_shengbte import helpers
-from aiida import cmdline, engine
+from aiida import cmdline, engine, orm
 from aiida.plugins import DataFactory, CalculationFactory
 import click
+import logging
+logging.basicConfig(level=logging.INFO)
 
 INPUT_DIR = path.join(path.dirname(path.realpath(__file__)), 'input_files')
 
@@ -22,58 +23,98 @@ def test_run(shengbte_code):
         # get code
         computer = helpers.get_computer()
         shengbte_code = helpers.get_code(entry_point='shengbte',
-                                         computer=computer)
-        logging.info(computer.get_name())
-        logging.info(shengbte_code)
+                                         computer=computer,
+                                         prepend_text='find _* |')
+        # logging.info(computer.get_name())
+        # shengbte_code = load_code('test@test')
+    logging.info(shengbte_code)
 
-    # Prepare input parameters
-    DiffParameters = DataFactory('shengbte')
-    parameters = DiffParameters({'ignore-case': True})
+    # # Prepare input parameters
+    # DiffParameters = DataFactory('shengbte')
+    # parameters = DiffParameters({'ignore-case': True})
 
     SinglefileData = DataFactory('singlefile')
-    file1 = SinglefileData(file=path.join(INPUT_DIR, 'file1.txt'))
-    file2 = SinglefileData(file=path.join(INPUT_DIR, 'file2.txt'))
+    FORCE_CONSTANTS_2ND = SinglefileData(file=path.join(
+        INPUT_DIR, 'file1.txt'),
+        filename='FORCE_CONSTANTS_2ND')
+    FORCE_CONSTANTS_3RD = SinglefileData(file=path.join(
+        INPUT_DIR, 'file2.txt'),
+        filename='FORCE_CONSTANTS_3RD')
 
-    # set up calculation
     inputs = {
         'code': shengbte_code,
-        'parameters': parameters,
-        'file1': file1,
-        'file2': file2,
+        'control': orm.Dict(dict={
+            'allocations': {
+                'nelements': 3,
+                'natoms': 2,
+                'ngrid': [3, 3, 3],
+                'norientations': 0
+            },
+            'crystal': {
+                'lattvec': [
+                    [1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9]],
+                'types': [1, 2],
+                'elements': ['h', 'i', 'j'],
+                'positions': [[1, 2, 3],
+                              [4, 5, 6],
+                              [7, 8, 9]],
+                'scell': [3, 3, 3],
+                'born': [
+                    [
+                        [1, 2, 3],
+                        [4, 5, 6],
+                        [7, 8, 9]
+                    ],
+                    [
+                        [1, 2, 3],
+                        [4, 5, 6],
+                        [7, 8, 9]
+                    ]
+                ]
+                # 'orientations': [3, 2, 1]
+            },
+            'parameters': {
+                'T': 5,
+            },
+            'flags': {
+                'espresso': True
+            }
+        }),
+        'FORCE_CONSTANTS_2ND': FORCE_CONSTANTS_2ND,
+        'FORCE_CONSTANTS_3RD': FORCE_CONSTANTS_3RD,
+        # 'clean_workdir': orm.Bool(True),
         'metadata': {
             'description':
             "Test job submission with the aiida_shengbte plugin",
+            # 'dry_run': True,
+            # 'store_provenance': False,
         },
     }
-    # inputs = {
-    #     parameters: inputs
-    # }
 
     # Note: in order to submit your calculation to the aiida daemon, do:
     # from aiida.engine import submit
     # future = submit(CalculationFactory('shengbte'), **inputs)
-    result = engine.run(CalculationFactory('shengbte'), **inputs)
+    result = engine.run(CalculationFactory('shengbte.shengbte'), **inputs)
 
-    # print(result)
     logging.info(result)
-    computed_diff = result['shengbte'].get_content()
-    print("Computed diff between files: \n{}".format(computed_diff))
 
 
-@click.command()
-@cmdline.utils.decorators.with_dbenv()
-@cmdline.params.options.CODE()
+@ click.command()
+@ cmdline.utils.decorators.with_dbenv()
+@ cmdline.params.options.CODE()
 def cli(code):
     """Run example.
 
-    Example usage: $ ./example_01.py --code diff@localhost
+    Example usage: $ ./example_01.py -- code diff@localhost
 
     Alternative (creates diff@localhost-test code): $ ./example_01.py
 
-    Help: $ ./example_01.py --help
+    Help: $ ./example_01.py -- help
     """
     test_run(code)
 
 
 if __name__ == '__main__':
-    cli()  # pylint: disable=no-value-for-parameter
+    cli()  # pylint: disable = no-value-for-parameter

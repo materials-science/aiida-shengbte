@@ -16,7 +16,8 @@ LOCALHOST_NAME = 'localhost-test'
 
 executables = {
     'shengbte': 'bash',
-    'thirdorder_vasp': '/home/por/aiida/thirdorder/thirdorder_vasp.py'
+    'thirdorder_vasp_sow': '/home/por/aiida/thirdorder/thirdorder_vasp.py',
+    'thirdorder_vasp_reap': '/home/por/aiida/thirdorder/thirdorder_vasp.py',
 }
 
 
@@ -70,7 +71,7 @@ def get_computer(name=LOCALHOST_NAME, workdir=None):
     return computer
 
 
-def get_code(entry_point, computer):
+def get_code(entry_point, computer, prepend_text=None):
     """Get local code.
     Sets up code for given entry point on given computer.
 
@@ -97,6 +98,8 @@ def get_code(entry_point, computer):
         input_plugin_name=entry_point,
         remote_computer_exec=[computer, path],
     )
+    if prepend_text is not None:
+        code.set_prepend_text(prepend_text)
     code.label = executable
     return code.store()
 

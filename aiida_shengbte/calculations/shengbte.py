@@ -40,7 +40,7 @@ class ShengbteCalculation(CalcJob):
         spec.input('FORCE_CONSTANTS_2ND',
                    valid_type=orm.SinglefileData,
                    help='FORCE_CONSTANTS file of Phonopy or espresso.ifc2')
-        spec.input('FORCE_CONSTANTS_3ND',
+        spec.input('FORCE_CONSTANTS_3RD',
                    valid_type=orm.SinglefileData,
                    help='third-order interatomic force constant matrix')
 
@@ -131,9 +131,9 @@ class ShengbteCalculation(CalcJob):
             (self.inputs.FORCE_CONSTANTS_2ND.uuid,
              self.inputs.FORCE_CONSTANTS_2ND.filename,
              self.get_remote_relative_path(self.inputs.FORCE_CONSTANTS_2ND.filename)),
-            (self.inputs.FORCE_CONSTANTS_3ND.uuid,
-             self.inputs.FORCE_CONSTANTS_3ND.filename,
-             self.get_remote_relative_path(self.inputs.FORCE_CONSTANTS_3ND.filename)),
+            (self.inputs.FORCE_CONSTANTS_3RD.uuid,
+             self.inputs.FORCE_CONSTANTS_3RD.filename,
+             self.get_remote_relative_path(self.inputs.FORCE_CONSTANTS_3RD.filename)),
         ]
         # calcinfo.retrieve_list = [self.options.output_filename]
         calcinfo.retrieve_list = [self.options.output_filename, ('shengbte/BTE.*', '.', 2), ('shengbte/T*K', '.', 2)]
