@@ -25,13 +25,7 @@ def test_run(shengbte_code):
         shengbte_code = helpers.get_code(entry_point='shengbte',
                                          computer=computer,
                                          prepend_text='find _* |')
-        # logging.info(computer.get_name())
-        # shengbte_code = load_code('test@test')
     logging.info(shengbte_code)
-
-    # # Prepare input parameters
-    # DiffParameters = DataFactory('shengbte')
-    # parameters = DiffParameters({'ignore-case': True})
 
     SinglefileData = DataFactory('singlefile')
     FORCE_CONSTANTS_2ND = SinglefileData(file=path.join(
@@ -41,6 +35,7 @@ def test_run(shengbte_code):
         INPUT_DIR, 'file2.txt'),
         filename='FORCE_CONSTANTS_3RD')
 
+    import numpy as np
     inputs = {
         'code': shengbte_code,
         'control': orm.Dict(dict={
@@ -61,7 +56,7 @@ def test_run(shengbte_code):
                               [4, 5, 6],
                               [7, 8, 9]],
                 'scell': [3, 3, 3],
-                'born': [
+                'born': np.array([
                     [
                         [1, 2, 3],
                         [4, 5, 6],
@@ -72,7 +67,7 @@ def test_run(shengbte_code):
                         [4, 5, 6],
                         [7, 8, 9]
                     ]
-                ]
+                ])
                 # 'orientations': [3, 2, 1]
             },
             'parameters': {

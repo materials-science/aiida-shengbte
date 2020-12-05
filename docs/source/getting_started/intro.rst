@@ -1,5 +1,7 @@
+.. _introduction:
+
 ===============
-Getting started
+1. Introduction
 ===============
 
 This page should contain a short guide on what the plugin does and
@@ -35,8 +37,3 @@ If you have already set up your own aiida_shengbte code using
 
     shengbte-submit  # uses aiida_shengbte.cli
 
-Available calculations
-++++++++++++++++++++++
-
-.. aiida-calcjob:: DiffCalculation
-    :module: aiida_shengbte.calculations

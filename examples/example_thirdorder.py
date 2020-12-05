@@ -79,7 +79,6 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None):
         # 'clean_workdir': orm.Bool(True),
         'metadata': {
             'description': "Test job submission with the aiida_shengbte thirdorder plugin",
-            # 'dry_run': True,
         },
     }
     logging.error(inputs)

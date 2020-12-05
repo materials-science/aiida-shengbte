@@ -9,10 +9,30 @@ The aiida-shengbte plugin for `AiiDA`_
 
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 1
+    :caption: Getting started
 
-   user_guide/index
+    getting_started/install
+    getting_started/profile
+    getting_started/code
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Tutorials
+
+    tutorials/shengbte_calculation
+    tutorials/thirdorder
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Developments
+
    developer_guide/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API reference
+
    API documentation <apidoc/aiida_shengbte>
 
 If you use this plugin for your research, please cite the following work:

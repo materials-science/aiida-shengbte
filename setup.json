@@ -21,6 +21,8 @@
 			"shengbte.thirdorder_reap = aiida_shengbte.calculations.thirdorder:ThirdorderReapCalculation"
 		],
 		"aiida.workflows": [
+			"shengbte.shengbte = aiida_shengbte.workflows.shengbte:ShengbteWorkChain",
+			"shengbte.vasp = aiida_shengbte.workflows.vasp:ShengbteVaspWorkChain",
 			"shengbte.thirdorder = aiida_shengbte.workflows.thirdorder:ThirdorderWorkChain"
 		],
 		"aiida.parsers": [

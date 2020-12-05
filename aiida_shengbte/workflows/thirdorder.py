@@ -1,8 +1,8 @@
-from aiida.orm import Dict, StructureData, CalcJobNode
+from aiida.orm import Dict, StructureData
 from aiida.common import AttributeDict
-from aiida.engine import WorkChain, ToContext
+from aiida.engine import ToContext
 from aiida.plugins.factories import CalculationFactory
-
+from aiida_shengbte.workflows import BaseWorkChain
 ThirdorderSowCalculation = CalculationFactory('shengbte.thirdorder_sow')
 ThirdorderReapCalculation = CalculationFactory('shengbte.thirdorder_reap')
 
@@ -11,7 +11,7 @@ def validate_inputs(inputs, ctx=None):  # pylint: disable=unused-argument
     """Validate the inputs of the entire input namespace."""
 
 
-class ThirdorderWorkChain(WorkChain):
+class ThirdorderWorkChain(BaseWorkChain):
     @classmethod
     def define(cls, spec):
         super().define(spec)
@@ -19,6 +19,7 @@ class ThirdorderWorkChain(WorkChain):
         spec.expose_inputs(ThirdorderReapCalculation, namespace='thirdorder_reap',
                            exclude=('vasp_folder', 'supercells_folder',))
         spec.input('structure', valid_type=StructureData)
+        # TODO: add quantumrespresso support
         spec.input('vasp_settings', valid_type=Dict)
 
         spec.outline(
@@ -127,25 +128,3 @@ class ThirdorderWorkChain(WorkChain):
     def inspect_thirdorder_reap(self):
         self.report('output FORCE_CONSTANTS_3RD.')
         self.out('FORCE_CONSTANTS_3RD', self.ctx.calculation_thirdorder_reap.outputs.FORCE_CONSTANTS_3RD)
-
-    def on_terminated(self):
-        """Clean the working directories of all child calculations if `clean_workdir=True` in the inputs."""
-        super().on_terminated()
-
-        if self.inputs.clean_workdir.value is False:
-            self.report('remote folders will not be cleaned')
-            return
-
-        cleaned_calcs = []
-
-        for called_descendant in self.node.called_descendants:
-            if isinstance(called_descendant, CalcJobNode):
-                try:
-                    called_descendant.outputs.remote_folder._clean()  # pylint: disable=protected-access
-                    cleaned_calcs.append(called_descendant.pk)
-                except (IOError, OSError, KeyError):
-                    pass
-
-        if cleaned_calcs:
-            self.report('cleaned remote folders of calculations: {}'.format(
-                ' '.join(map(str, cleaned_calcs))))

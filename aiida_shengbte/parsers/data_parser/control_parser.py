@@ -1,7 +1,9 @@
 from aiida.common import AIIDA_LOGGER
+import numpy as np
 
 
 class ControlParser(object):
+    # TODO: Decide to use ndarray or list as type of vector
     _CONTROL = {
         'allocations': {
             'nelements': {
@@ -55,11 +57,11 @@ class ControlParser(object):
             },
             'epsilon': {
                 # <3 * 3>
-                'type': list,
+                # 'type': np.ndarray,
             },
             'born': {
                 # <3 * 3 * natoms>
-                'type': list,
+                # 'type': np.ndarray,
             },
             'scell': {
                 # <len 3>
@@ -187,7 +189,6 @@ class ControlParser(object):
         self.valid_control = valid_dict
 
     def write_control(self, dist):
-        import numpy as np
         try:
             self.valid_control
         except AttributeError:
@@ -201,7 +202,7 @@ class ControlParser(object):
                     if isinstance(val, bool):
                         target.write(
                             f'\t{key}={".true." if val else ".false."},\n')
-                    elif isinstance(val, list):
+                    elif isinstance(val, list) or isinstance(val, np.ndarray):
                         vectors = np.array(val)
                         shape = vectors.shape
                         if len(shape) == 1:
