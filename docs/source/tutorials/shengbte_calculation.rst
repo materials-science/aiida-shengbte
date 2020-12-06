@@ -1,23 +1,23 @@
 .. _shengbte_calculation:
 
 =======================================
-Base Shengbte Calculation and WorkChain
+Base ShengBTE Calculation and WorkChain
 =======================================
 
-This page can contain a tutorial for `ShengbteCalculation` and `ShengbteWorkChain`.
+This page can contain a tutorial for `ShengBTECalculation` and `ShengBTEWorkChain`.
 
-ShengbteCalculation
+ShengBTECalculation
 +++++++++++++++++++
 
-If you already have ``CONTROL``, ``FORCE_CONSTANTS_2ND`` and ``FORCE_CONSTANTS_2ND``, just construct a ``control`` in `Dict` type and transfer ``FORCE_CONSTANTS`` files to `SinglefileData` and run ShengbteCalculation. See ``examples/example_base.py`` in repository.
+If you already have ``CONTROL``, ``FORCE_CONSTANTS_2ND`` and ``FORCE_CONSTANTS_2ND``, just construct a ``control`` in `Dict` type and transfer ``FORCE_CONSTANTS`` files to `SinglefileData` and run ShengBTECalculation. See ``examples/example_base.py`` in repository.
 
-.. aiida-calcjob:: ShengbteCalculation
+.. aiida-calcjob:: ShengBTECalculation
     :module: aiida_shengbte.calculations.shengbte
 
-ShengbteWorkChain
+ShengBTEWorkChain
 +++++++++++++++++
 
-By passing StructureData to `ShengbteWorkChain`, you don't need set some parameters in ``control``. The optinal parameters you may set are::
+By passing StructureData to `ShengBTEWorkChain`, you don't need set some parameters in ``control``. The optinal parameters you may set are::
 
     _CONTROL_OPTIONAL = {
         'allocations': ['ngrid', 'norientations'],
@@ -28,5 +28,5 @@ By passing StructureData to `ShengbteWorkChain`, you don't need set some paramet
 
 See ``examples/example_shengbte_workflow.py`` in repository.
 
-.. aiida-workchain:: ShengbteWorkChain
+.. aiida-workchain:: ShengBTEWorkChain
     :module: aiida_shengbte.workflows.shengbte

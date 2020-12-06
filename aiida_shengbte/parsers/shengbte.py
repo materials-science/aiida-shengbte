@@ -3,8 +3,8 @@ from aiida.engine import ExitCode
 import os
 
 
-class ShengbteParser(Parser):
-    """Parser for an `ShengbteCalculation` job."""
+class ShengBTEParser(Parser):
+    """Parser for an `ShengBTECalculation` job."""
 
     def parse(self, **kwargs):
         """Parse the contents of the output files stored in the `retrieved` output node."""

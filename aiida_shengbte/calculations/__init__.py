@@ -12,7 +12,7 @@ from aiida.orm import Bool
 
 class BaseCalculation(CalcJob):
     """
-    A basic plugin.
+    A basic calculation.
     """
 
     _DEFAULT_METADATA_RESOURCES = {
@@ -33,8 +33,33 @@ class BaseCalculation(CalcJob):
                    default=False,
                    non_db=True,
                    help='Dry run without submission for test')
+        spec.input('metadata.store_provenance',
+                   valid_type=bool,
+                   required=False,
+                   default=True,
+                   non_db=True,
+                   help='Set False to unable creating nodes')
         spec.input('clean_workdir',
                    valid_type=Bool,
                    required=False,
                    default=lambda: Bool(False),
                    help="""If True, clean the work dir upon the completion of a successfull calculation.""")
+
+    def on_terminated(self):
+        """Clean remote folders of the calculations called in the workchain if the clean_workdir input is True."""
+
+        super().on_terminated()  # pylint: disable=no-member
+        # Do not clean if we do not want to or the calculation failed
+        if self.node.exit_status or self.inputs.clean_workdir.value is False:
+            self.report('not cleaning the remote folders')  # pylint: disable=not-callable
+            return
+
+        cleaned_calcs = []
+        try:
+            self.outputs['remote_folder']._clean()
+            cleaned_calcs.append(self.node.pk)
+        except BaseException:
+            pass
+        if cleaned_calcs:
+            self.report('cleaned remote folders of calculations: {}'.format(
+                ' '.join(map(str, cleaned_calcs))))  # pylint: disable=not-callable

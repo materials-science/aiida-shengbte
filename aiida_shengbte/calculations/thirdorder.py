@@ -1,4 +1,3 @@
-from aiida.orm import Bool
 from aiida.common import datastructures
 from aiida.plugins import DataFactory
 from aiida_shengbte.calculations import BaseCalculation
@@ -42,34 +41,9 @@ class BaseThirdorderCalculation(BaseCalculation):
         spec.exit_code(321, 'ERROR_INVALID_OUTPUT',
                        message='The output file contains invalid output.')
 
-    def on_terminated(self):
-        """Clean remote folders of the calculations called in the workchain if the clean_workdir input is True."""
-
-        super().on_terminated()  # pylint: disable=no-member
-        # Do not clean if we do not want to or the calculation failed
-        if self.node.exit_status or self.inputs.clean_workdir.value is False:
-            self.report('not cleaning the remote folders')  # pylint: disable=not-callable
-            return
-
-        cleaned_calcs = []
-        try:
-            self.outputs['remote_folder']._clean()
-            cleaned_calcs.append(self.node.pk)
-        except BaseException:
-            pass
-        if cleaned_calcs:
-            self.report('cleaned remote folders of calculations: {}'.format(
-                ' '.join(map(str, cleaned_calcs))))  # pylint: disable=not-callable
-
 
 class ThirdorderSowCalculation(BaseThirdorderCalculation):
-    """[summary]
-
-    Args:
-        CalcJob ([type]): [description]
-
-    Returns:
-        [type]: [description]
+    """Thirdorder Calculation executing command `thirdorder_<vasp/qe/>.py sow`
     """
     _PREFIX = 'aiida'
     _DEFAULT_INPUT_FILE = 'POSCAR'
@@ -118,13 +92,7 @@ class ThirdorderSowCalculation(BaseThirdorderCalculation):
 
 
 class ThirdorderReapCalculation(BaseThirdorderCalculation):
-    """[summary]
-
-    Args:
-        CalcJob ([type]): [description]
-
-    Returns:
-        [type]: [description]
+    """Thirdorder Calculation executing command `thirdorder_<vasp/qe/>.py reap`
     """
     _PREFIX = 'aiida'
     _DEFAULT_OUTPUT_FILE = 'FORCE_CONSTANTS_3RD'

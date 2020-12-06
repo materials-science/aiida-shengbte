@@ -1,34 +1,24 @@
-from aiida.engine import CalcJob
+import os
 from aiida import orm
 from aiida.common import datastructures
 from aiida_shengbte.parsers.data_parser.control_parser import ControlParser
-import os
+from aiida_shengbte.calculations import BaseCalculation
 
 
-class ShengbteCalculation(CalcJob):
-    """[summary]
-
-    Args:
-        CalcJob ([type]): [description]
-
-    Returns:
-        [type]: [description]
+class ShengBTECalculation(BaseCalculation):
+    """Base ShengBTE Calculation.
     """
     _OUTPUT_SUBFOLDER = './shengbte/'
     _PREFIX = 'aiida'
     _DEFAULT_INPUT_FILE = 'aiida.in'
     _DEFAULT_OUTPUT_FILE = 'aiida.out'
-    _DEFAULT_METADATA_RESOURCES = {
-        'num_machines': 1,
-        'num_mpiprocs_per_machine': 1,
-    }
 
     @classmethod
     def define(cls, spec):
         """
         docstring
         """
-        super(ShengbteCalculation, cls).define(spec)
+        super().define(spec)
 
         # set default values for AiiDA options
         spec.inputs['metadata']['options']['parser_name'].default = 'shengbte'
@@ -53,29 +43,6 @@ class ShengbteCalculation(CalcJob):
                    valid_type=bool,
                    default=False,
                    help='Run with mpi.')
-        spec.input('metadata.options.resources',
-                   valid_type=dict,
-                   default=cls._DEFAULT_METADATA_RESOURCES,
-                   help='resources designated for calculation.')
-        spec.input('metadata.dry_run',
-                   valid_type=bool,
-                   required=False,
-                   default=False,
-                   non_db=True,
-                   help='Dry run without submission for test')
-        spec.input('metadata.store_provenance',
-                   valid_type=bool,
-                   required=False,
-                   default=True,
-                   non_db=True,
-                   help='Set False to unable creating nodes')
-        spec.input('clean_workdir',
-                   valid_type=orm.Bool,
-                   required=False,
-                   default=lambda: orm.Bool(False),
-                   help="""
-            If True, clean the work dir upon the completion of a successfull calculation.
-            """)
 
         # TODO(poryoung): to develop a interface for handle outputs of vasp or qe or just restart from itself
         spec.input('parent_folder',
@@ -116,11 +83,7 @@ class ShengbteCalculation(CalcJob):
 
         codeinfo = datastructures.CodeInfo()
         codeinfo.code_uuid = self.inputs.code.uuid
-        codeinfo.cmdline_params = [
-            '-c',
-            "/home/por/miniconda3/envs/aiida_shengbte/bin/python /home/por/aiida/aiida-shengbte/examples/test_code.py"
-        ]
-        # codeinfo.stdin_name = self.options.input_filename
+        codeinfo.cmdline_params = []
         codeinfo.stdout_name = self.options.output_filename
         codeinfo.withmpi = self.inputs.metadata.options.withmpi
 
@@ -135,29 +98,9 @@ class ShengbteCalculation(CalcJob):
              self.inputs.FORCE_CONSTANTS_3RD.filename,
              self.get_remote_relative_path(self.inputs.FORCE_CONSTANTS_3RD.filename)),
         ]
-        # calcinfo.retrieve_list = [self.options.output_filename]
-        calcinfo.retrieve_list = [self.options.output_filename, ('shengbte/BTE.*', '.', 2), ('shengbte/T*K', '.', 2)]
+        calcinfo.retrieve_list = [('shengbte/BTE.*', '.', 2), ('shengbte/T*K', '.', 2)]
 
         return calcinfo
-
-    def on_terminated(self):
-        """Clean remote folders of the calculations called in the workchain if the clean_workdir input is True."""
-
-        super(ShengbteCalculation, self).on_terminated()  # pylint: disable=no-member
-        # Do not clean if we do not want to or the calculation failed
-        if self.node.exit_status or self.inputs.clean_workdir.value is False:
-            self.report('not cleaning the remote folders')  # pylint: disable=not-callable
-            return
-
-        cleaned_calcs = []
-        try:
-            self.outputs['remote_folder']._clean()
-            cleaned_calcs.append(self.node.pk)
-        except BaseException:
-            pass
-        if cleaned_calcs:
-            self.report('cleaned remote folders of calculations: {}'.format(
-                ' '.join(map(str, cleaned_calcs))))  # pylint: disable=not-callable
 
     def get_remote_relative_path(self, path):
         return os.path.join(self._OUTPUT_SUBFOLDER, path)

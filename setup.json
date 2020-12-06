@@ -16,17 +16,17 @@
 	"entry_points": {
 		"aiida.data": ["diff = aiida_shengbte.data:DiffParameters"],
 		"aiida.calculations": [
-			"shengbte.shengbte = aiida_shengbte.calculations.shengbte:ShengbteCalculation",
+			"shengbte.shengbte = aiida_shengbte.calculations.shengbte:ShengBTECalculation",
 			"shengbte.thirdorder_sow = aiida_shengbte.calculations.thirdorder:ThirdorderSowCalculation",
 			"shengbte.thirdorder_reap = aiida_shengbte.calculations.thirdorder:ThirdorderReapCalculation"
 		],
 		"aiida.workflows": [
-			"shengbte.shengbte = aiida_shengbte.workflows.shengbte:ShengbteWorkChain",
-			"shengbte.vasp = aiida_shengbte.workflows.vasp:ShengbteVaspWorkChain",
+			"shengbte.shengbte = aiida_shengbte.workflows.shengbte:ShengBTEWorkChain",
+			"shengbte.vasp = aiida_shengbte.workflows.vasp:ShengBTEVaspWorkChain",
 			"shengbte.thirdorder = aiida_shengbte.workflows.thirdorder:ThirdorderWorkChain"
 		],
 		"aiida.parsers": [
-			"shengbte = aiida_shengbte.parsers.shengbte:ShengbteParser",
+			"shengbte = aiida_shengbte.parsers.shengbte:ShengBTEParser",
 			"thirdorder_sow = aiida_shengbte.parsers.thirdorder:ThirdorderSowParser",
 			"thirdorder_reap = aiida_shengbte.parsers.thirdorder:ThirdorderReapParser"
 		],

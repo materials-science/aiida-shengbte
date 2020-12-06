@@ -4,14 +4,16 @@ from aiida.engine import ToContext
 from aiida.plugins.factories import CalculationFactory
 from aiida_shengbte.workflows import BaseWorkChain
 
-ShengbteCalculation = CalculationFactory('shengbte.shengbte')
+ShengBTECalculation = CalculationFactory('shengbte.shengbte')
 
 
 def validate_inputs(inputs, ctx=None):  # pylint: disable=unused-argument
     """Validate the inputs of the entire input namespace."""
 
 
-class ShengbteWorkChain(BaseWorkChain):
+class ShengBTEWorkChain(BaseWorkChain):
+    """Class decorator for creating a WorkChain class with StructureData passed.
+    """
     _CONTROL_OPTIONAL = {
         'allocations': ['ngrid', 'norientations'],
         'crystal': ['orientations', 'masses', 'gfactors', 'scell', 'born', 'epsilon', 'lfactor'],
@@ -22,7 +24,7 @@ class ShengbteWorkChain(BaseWorkChain):
     @classmethod
     def define(cls, spec):
         super().define(spec)
-        spec.expose_inputs(ShengbteCalculation, namespace='calculation',
+        spec.expose_inputs(ShengBTECalculation, namespace='calculation',
                            exclude=('control', 'metadata.dry_run', 'clean_workdir'))
         spec.input('structure', valid_type=StructureData)
         spec.input('control', valid_type=Dict)
@@ -33,12 +35,12 @@ class ShengbteWorkChain(BaseWorkChain):
             cls.inspect_shengbte
         )
 
-        spec.expose_outputs(ShengbteCalculation)
+        spec.expose_outputs(ShengBTECalculation)
 
         spec.exit_code(201, 'ERROR_KEY_IN_INPUT',
                        message='The key in `control` is invalid.')
         spec.exit_code(401, 'ERROR_SUB_PROCESS_FAILED_SHENGBTE_CALCULATION',
-                       message='The Shengbte Calculation sub process failed.')
+                       message='The ShengBTE Calculation sub process failed.')
 
     def setup(self):
         """Define the current structure in the context to be the input structure."""
@@ -92,11 +94,11 @@ class ShengbteWorkChain(BaseWorkChain):
 
     def run_shengbte(self):
         """Run shengbte calculation"""
-        inputs = AttributeDict(self.exposed_inputs(ShengbteCalculation, namespace='calculation'))
+        inputs = AttributeDict(self.exposed_inputs(ShengBTECalculation, namespace='calculation'))
         inputs.metadata.call_link_label = 'shengbte_calculation'
         inputs.control = self.ctx.control
 
-        running = self.submit(ShengbteCalculation, **inputs)
+        running = self.submit(ShengBTECalculation, **inputs)
 
         self.report('launching shengbte Calculation<{}>'.format(running.pk))
 
@@ -104,10 +106,10 @@ class ShengbteWorkChain(BaseWorkChain):
 
     def inspect_shengbte(self):
         if self.ctx.calculation_shengbte.is_finished_ok:
-            self.report('Shengbte calculation succesfully completed.')
+            self.report('ShengBTE calculation succesfully completed.')
             self.report(self.ctx.calculation_shengbte.outputs.out_path)
             self.out_many(
-                self.exposed_outputs(self.ctx.calculation_shengbte, ShengbteCalculation)
+                self.exposed_outputs(self.ctx.calculation_shengbte, ShengBTECalculation)
             )
         else:
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED_SHENGBTE_CALCULATION

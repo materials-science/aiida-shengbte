@@ -1,12 +1,12 @@
 .. _qe_shengbte:
 
 ===================================================
-Shengbte Calculation with QE Interface
+ShengBTE Calculation with QE Interface
 ===================================================
 
-This page can contain a tutorial for `ShengbteQEWorkChain`. It will use `QE`_ to calculate ``FORCE CONSTANTS`` and other parameters `ShengBTE`_ requires.
+This page can contain a tutorial for `ShengBTEQEWorkChain`. It will use `QE`_ to calculate ``FORCE CONSTANTS`` and other parameters `ShengBTE`_ requires.
 
-ShengbteQEWorkChain
+ShengBTEQEWorkChain
 +++++++++++++++++++
 
 Under developing.

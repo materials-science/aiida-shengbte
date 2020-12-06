@@ -1,17 +1,17 @@
 .. _vasp_shengbte:
 
 ========================================
-Shengbte Calculation with VASP Interface
+ShengBTE Calculation with VASP Interface
 ========================================
 
-This page can contain a tutorial for `ShengbteVaspWorkChain`. It will use `VASP`_ to calculate ``FORCE CONSTANTS`` and other parameters `ShengBTE`_ requires.
+This page can contain a tutorial for `ShengBTEVaspWorkChain`. It will use `VASP`_ to calculate ``FORCE CONSTANTS`` and other parameters `ShengBTE`_ requires.
 
-ShengbteVaspWorkChain
+ShengBTEVaspWorkChain
 +++++++++++++++++++
 
 See ``examples/example_vasp.py`` in repository.
 
-.. aiida-workchain:: ShengbteVaspWorkChain
+.. aiida-workchain:: ShengBTEVaspWorkChain
     :module: aiida_shengbte.workflows.vasp
 
 .. _AiiDA: https://www.aiida.net

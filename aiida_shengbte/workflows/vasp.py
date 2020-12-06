@@ -8,14 +8,16 @@ SinglefileData = DataFactory('singlefile')
 
 PhonopyWorkChain = WorkflowFactory('phonopy.phonopy')
 ThirdorderWorkChain = WorkflowFactory('shengbte.thirdorder')
-ShengbteWorkChain = WorkflowFactory('shengbte.shengbte')
+ShengBTEWorkChain = WorkflowFactory('shengbte.shengbte')
 
 
 def validate_inputs(inputs, ctx=None):  # pylint: disable=unused-argument
     """Validate the inputs of the entire input namespace."""
 
 
-class ShengbteVaspWorkChain(BaseWorkChain):
+class ShengBTEVaspWorkChain(BaseWorkChain):
+    """ShengBTE WorkChain to run ShengBTE Calculation with force constants and other parameters calculating by vasp, phonopy and thirdorder.
+    """
     @classmethod
     def define(cls, spec):
         super().define(spec)
@@ -23,12 +25,12 @@ class ShengbteVaspWorkChain(BaseWorkChain):
             'structure', 'calculator_settings', 'calculation_nodes', 'dry_run'))
         spec.expose_inputs(ThirdorderWorkChain, namespace='thirdorder',
                            exclude=('structure', 'vasp_settings', 'clean_workdir', 'dry_run'))
-        spec.expose_inputs(ShengbteWorkChain, namespace='shengbte',
+        spec.expose_inputs(ShengBTEWorkChain, namespace='shengbte',
                            exclude=('structure', 'control', 'clean_workdir', 'calculation.FORCE_CONSTANTS_2ND', 'calculation.FORCE_CONSTANTS_3RD'))
         spec.input('structure', valid_type=StructureData)
-        spec.input('vasp_settings', valid_type=Dict)
         spec.input('run_thirdorder', valid_type=Bool, default=lambda: Bool(True),
-                   help='Calculating the third order force constants with thirdorder.')
+                   help='Calculating the third order force constants with thirdorder. Set False to call phono3py.')
+        spec.input('vasp_settings', valid_type=Dict)
         spec.input('dry_run', valid_type=Bool, default=lambda: Bool(False))
 
         spec.outline(
@@ -46,7 +48,7 @@ class ShengbteVaspWorkChain(BaseWorkChain):
             cls.inspect_shengbte
         )
 
-        spec.expose_outputs(ShengbteWorkChain, namespace='shengbte')
+        spec.expose_outputs(ShengBTEWorkChain, namespace='shengbte')
 
         spec.exit_code(401, 'ERROR_SUB_PROCESS_FAILED',
                        message='The sub process failed')
@@ -132,7 +134,7 @@ class ShengbteVaspWorkChain(BaseWorkChain):
     def run_shengbte(self):
         """Run shengbte calculation"""
         inputs = AttributeDict(self.exposed_inputs(
-            ShengbteWorkChain, namespace='shengbte'))
+            ShengBTEWorkChain, namespace='shengbte'))
         inputs.metadata.call_link_label = 'shengbte'
         inputs.structure = self.ctx.structure
         inputs.FORCE_CONSTANTS_3RD = self.ctx.FORCE_CONSTANTS_3RD
@@ -152,18 +154,18 @@ class ShengbteVaspWorkChain(BaseWorkChain):
         inputs.contrl['crystal']['epsilon'] = self.ctx.epsilon
         inputs.contrl['crystal']['scell'] = self.ctx.phonopy_supercell_matrix
 
-        running = self.submit(ShengbteWorkChain, **inputs)
+        running = self.submit(ShengBTEWorkChain, **inputs)
 
-        self.report('launching Shengbte WorkChain<{}>'.format(running.pk))
+        self.report('launching ShengBTE WorkChain<{}>'.format(running.pk))
 
         return ToContext(workchain_shengbte=running)
 
     def inspect_shengbte(self):
         if not self.ctx.workchain_shengbte.is_finished_ok:
-            self.report('Shengbte WorkChain failed with exit status {}'.format(self.ctx.workchain_shengbte.exit_status))
+            self.report('ShengBTE WorkChain failed with exit status {}'.format(self.ctx.workchain_shengbte.exit_status))
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED
 
-        self.report('Shengbte WorkChain succesfully completed.')
+        self.report('ShengBTE WorkChain succesfully completed.')
         self.out_many(
-            self.exposed_outputs(self.ctx.workchain_shengbte, ShengbteWorkChain, namespace='shengbte')
+            self.exposed_outputs(self.ctx.workchain_shengbte, ShengBTEWorkChain, namespace='shengbte')
         )

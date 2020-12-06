@@ -300,7 +300,7 @@ def run_apidoc(_):
         # If we are, assemble the path manually
         cmd_path = os.path.abspath(
             os.path.join(sys.prefix, 'bin', 'sphinx-apidoc'))
-    else:
+    if os.path.isdir('/home/por/miniconda3'):
         # local test
         cmd_path = os.path.join('/home/por/miniconda3/envs/aiida_shengbte', 'bin', 'sphinx-apidoc')
 

@@ -12,6 +12,8 @@ def validate_inputs(inputs, ctx=None):  # pylint: disable=unused-argument
 
 
 class ThirdorderWorkChain(BaseWorkChain):
+    """Thirdorder WorkChain to run both ThirdorderSow Calculation and ThirdorderReap Calculation.
+    """
     @classmethod
     def define(cls, spec):
         super().define(spec)
