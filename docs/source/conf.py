@@ -295,12 +295,14 @@ def run_apidoc(_):
     # main([None, '-e', '-o', apidoc_dir, package_dir, '--force'])
 
     import subprocess
-    # cmd_path = 'sphinx-apidoc'
-    # if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
-    #     # If we are, assemble the path manually
-    #     cmd_path = os.path.abspath(
-    #         os.path.join(sys.prefix, 'bin', 'sphinx-apidoc'))
-    cmd_path = os.path.join('/home/por/miniconda3/envs/aiida_shengbte', 'bin', 'sphinx-apidoc')
+    cmd_path = 'sphinx-apidoc'
+    if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
+        # If we are, assemble the path manually
+        cmd_path = os.path.abspath(
+            os.path.join(sys.prefix, 'bin', 'sphinx-apidoc'))
+    else:
+        # local test
+        cmd_path = os.path.join('/home/por/miniconda3/envs/aiida_shengbte', 'bin', 'sphinx-apidoc')
 
     options = [
         '-o',
