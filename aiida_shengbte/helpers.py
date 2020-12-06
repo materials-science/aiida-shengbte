@@ -117,7 +117,6 @@ def get_test_structure():
        1
     Cartesian
     0.0000000000000000  0.0000000000000000  0.0000000000000000
-
     """
     import numpy as np
     structure_data = DataFactory('structure')
