@@ -86,6 +86,7 @@ environment called ``aiida_shengbte`` and install `AiiDA`_. Check `AiiDA Install
     - ``rabbitmq-server -detached``
     - ``verdi daemon start``
     - ``verdi check``
+    - ``eval "$(_VERDI_COMPLETE=source verdi)"`` to enable ``verdi`` command completion
     - Use ``sudo apt install graphviz`` for Ubuntu to install `graphviz`_
     - `Postgres`_
 

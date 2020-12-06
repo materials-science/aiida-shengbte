@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 """Run a test calculation on localhost.
 
-Usage: ./example_01.py
+Usage: ./example_vasp.py
 """
 from os import path
 from aiida_shengbte import helpers
@@ -142,7 +142,7 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None, shengbte_code=
             'description': "Test job submission with the aiida_shengbte thirdorder plugin",
         },
     }
-    result = engine.run(WorkflowFactory('shengbte.thirdorder'), **inputs)
+    result = engine.run(WorkflowFactory('shengbte.vasp'), **inputs)
 
     logging.info(result)
 

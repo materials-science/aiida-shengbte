@@ -22,6 +22,8 @@ The aiida-shengbte plugin for `AiiDA`_
 
     tutorials/shengbte_calculation
     tutorials/thirdorder
+    tutorials/vasp_shengbte
+    tutorials/qe_shengbte
 
 .. toctree::
    :maxdepth: 2
