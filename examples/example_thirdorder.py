@@ -23,7 +23,8 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None):
     computer = helpers.get_computer()
     if not thirdorder_sow_code:
         # get code
-        thirdorder_sow_code = helpers.get_code(entry_point='thirdorder_vasp_sow', computer=computer)
+        thirdorder_sow_code = helpers.get_code(
+            entry_point='thirdorder_vasp_sow', computer=computer)
     if not thirdorder_reap_code:
         thirdorder_reap_code = helpers.get_code(entry_point='thirdorder_vasp_reap',
                                                 computer=computer, prepend_text='find job.* -name vasprun.xml|sort -n|')
@@ -65,14 +66,14 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None):
             'code': thirdorder_sow_code,
             'parameters': Dict(dict={
                 'supercell_matrix': [3, 3, 3],
-                'option': '-3'
+                'option': 3
             })
         },
         'thirdorder_reap': {
             'code': thirdorder_reap_code,
             'parameters': Dict(dict={
                 'supercell_matrix': [3, 3, 3],
-                'option': '-3'
+                'option': 3
             })
         },
         'vasp_settings': Dict(dict={'forces': forces_config}),

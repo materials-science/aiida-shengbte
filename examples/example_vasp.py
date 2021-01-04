@@ -21,15 +21,17 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None, shengbte_code=
 
     Uses test helpers to create AiiDA Code on the fly.
     """
-    computer = helpers.get_computer()
+    computer = helpers.get_computer(name='vasp', workdir='/workdir/aiida/')
     if not thirdorder_sow_code:
         # get code
-        thirdorder_sow_code = helpers.get_code(entry_point='thirdorder_vasp_sow', computer=computer)
+        thirdorder_sow_code = helpers.get_code(
+            entry_point='thirdorder_vasp_sow', computer=computer)
     if not thirdorder_reap_code:
-        thirdorder_reap_code = helpers.get_code(entry_point='thirdorder_vasp_reap',
-                                                computer=computer, prepend_text='find job.* -name vasprun.xml|sort -n|')
+        thirdorder_reap_code = helpers.get_code(
+            entry_point='thirdorder_vasp_reap', computer=computer, prepend_text='find job.* -name vasprun.xml|sort -n|')
     if not shengbte_code:
-        shengbte_code = helpers.get_code(entry_point='shengbte', computer=computer)
+        shengbte_code = helpers.get_code(
+            entry_point='shengbte', computer=computer)
     # set up calculation
 
     base_incar_dict = {
@@ -52,7 +54,7 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None, shengbte_code=
         'potential_family': 'pbe',
         'potential_mapping': {'Si': 'Si'},
         'options': {
-            'resources': {'num_machines': 1, 'tot_num_mpiprocs': 4},
+            'resources': {'num_machines': 1, 'tot_num_mpiprocs': 20},
             'max_wallclock_seconds': 3600 * 10
         },
     }
@@ -69,7 +71,8 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None, shengbte_code=
     nac_parser_settings.update(base_parser_settings)
     nac_incar_dict = {'LEPSILON': True, 'IBRION': 8}
     nac_incar_dict.update(base_incar_dict)
-    nac_config.update({'parser_settings': nac_parser_settings, 'parameters': nac_incar_dict})
+    nac_config.update({'parser_settings': nac_parser_settings,
+                       'parameters': nac_incar_dict})
 
     inputs = {
         'structure': helpers.get_test_structure(),
@@ -95,14 +98,14 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None, shengbte_code=
                 'code': thirdorder_sow_code,
                 'parameters': Dict(dict={
                     'supercell_matrix': [3, 3, 3],
-                    'option': '-3'
+                    'option': 3
                 })
             },
             'thirdorder_reap': {
                 'code': thirdorder_reap_code,
                 'parameters': Dict(dict={
                     'supercell_matrix': [3, 3, 3],
-                    'option': '-3'
+                    'option': 3
                 })
             },
         },
@@ -137,7 +140,8 @@ def test_run(thirdorder_sow_code=None, thirdorder_reap_code=None, shengbte_code=
             },
         },
         'vasp_settings': Dict(dict={'forces': forces_config, 'nac': nac_config}),
-        # 'clean_workdir': orm.Bool(True),
+        # 'clean_workdir': Bool(True),
+        # 'dry_run': Bool(True),
         'metadata': {
             'description': "Test job submission with the aiida_shengbte thirdorder plugin",
         },

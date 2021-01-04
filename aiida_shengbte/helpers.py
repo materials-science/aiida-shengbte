@@ -15,9 +15,9 @@ from aiida.plugins.factories import DataFactory
 LOCALHOST_NAME = 'localhost-test'
 
 executables = {
-    'shengbte': 'bash',
-    'thirdorder_vasp_sow': '/home/por/aiida/thirdorder/thirdorder_vasp.py',
-    'thirdorder_vasp_reap': '/home/por/aiida/thirdorder/thirdorder_vasp.py',
+    'shengbte': '/workdir/shengbte/ShengBTE',
+    'thirdorder_vasp_sow': '/workdir/thirdorder/thirdorder_vasp.py',
+    'thirdorder_vasp_reap': '/workdir/thirdorder/thirdorder_vasp.py',
 }
 
 
@@ -31,7 +31,8 @@ def get_path_to_executable(executable):
     if ''.find('/') == -1:
         path = shutil.which(executable)
         if path is None:
-            raise ValueError("'{}' executable not found in PATH.".format(executable))
+            raise ValueError(
+                "'{}' executable not found in PATH.".format(executable))
         return path
     else:
         return executable
@@ -89,7 +90,8 @@ def get_code(entry_point, computer, prepend_text=None):
             "Entry point '{}' not recognized. Allowed values: {}".format(
                 entry_point, list(executables.keys())))
 
-    codes = Code.objects.find(filters={'label': executable})  # pylint: disable=no-member
+    codes = Code.objects.find(
+        filters={'label': entry_point})  # pylint: disable=no-member
     if codes:
         return codes[0]
 

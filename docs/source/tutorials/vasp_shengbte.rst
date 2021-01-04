@@ -6,6 +6,15 @@ ShengBTE Calculation with VASP Interface
 
 This page can contain a tutorial for `ShengBTEVaspWorkChain`. It will use `VASP`_ to calculate ``FORCE CONSTANTS`` and other parameters `ShengBTE`_ requires.
 
+Example
++++++++
+
+1. required code setup
+
+2. upload vasp potential
+
+3. run example code in ``examples/example_vasp.py``
+
 ShengBTEVaspWorkChain
 +++++++++++++++++++
 

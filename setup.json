@@ -40,7 +40,7 @@
 		"aiida-phonopy",
 		"aiida-quantumespresso",
 		"aiida-vasp",
-		"ase",
+        "ase",
 		"six",
 		"voluptuous"
 	],

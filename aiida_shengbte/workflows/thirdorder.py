@@ -17,9 +17,10 @@ class ThirdorderWorkChain(BaseWorkChain):
     @classmethod
     def define(cls, spec):
         super().define(spec)
-        spec.expose_inputs(ThirdorderSowCalculation, namespace='thirdorder_sow', exclude=('structure',))
+        spec.expose_inputs(ThirdorderSowCalculation,
+                           namespace='thirdorder_sow', exclude=('structure',))
         spec.expose_inputs(ThirdorderReapCalculation, namespace='thirdorder_reap',
-                           exclude=('vasp_folder', 'supercells_folder',))
+                           exclude=('structure', 'vasp_folder', 'supercells_folder',))
         spec.input('structure', valid_type=StructureData)
         # TODO: add quantumrespresso support
         spec.input('vasp_settings', valid_type=Dict)
@@ -29,7 +30,9 @@ class ThirdorderWorkChain(BaseWorkChain):
             cls.run_thirdorder_sow,
             cls.inspect_thirdorder_sow,
             cls.run_vasp,
-            cls.run_thirdorder_reap
+            cls.inspect_vasp,
+            cls.run_thirdorder_reap,
+            cls.inspect_thirdorder_reap
         )
         spec.output('FORCE_CONSTANTS_3RD')
         spec.exit_code(201, 'ERROR_READING_SUPERCELL_FILE',
@@ -55,7 +58,8 @@ class ThirdorderWorkChain(BaseWorkChain):
 
         running = self.submit(ThirdorderSowCalculation, **inputs)
 
-        self.report('launching Thirdorder Sow Calculation<{}>'.format(running.pk))
+        self.report(
+            'launching Thirdorder Sow Calculation<{}>'.format(running.pk))
 
         return ToContext(calculation_thirdorder_sow=running)
 
@@ -63,7 +67,8 @@ class ThirdorderWorkChain(BaseWorkChain):
         calculation = self.ctx.calculation_thirdorder_sow
 
         if not calculation.is_finished_ok:
-            self.report('Thirdorder sow failed with exit status {}'.format(calculation.exit_status))
+            self.report('Thirdorder sow failed with exit status {}'.format(
+                calculation.exit_status))
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED_THIRDORDER_SOW
 
         self.ctx.supercells_folder = calculation.outputs.retrieved
@@ -118,15 +123,18 @@ class ThirdorderWorkChain(BaseWorkChain):
         inputs = AttributeDict(self.exposed_inputs(
             ThirdorderReapCalculation, namespace='thirdorder_reap'))
         inputs.metadata.call_link_label = 'thirdorder_reap'
+        inputs.structure = self.ctx.current_structure
         inputs.vasp_folder = self.ctx.vasprun_xml_folder
         inputs.supercells_folder = self.ctx.supercells_folder
 
         running = self.submit(ThirdorderReapCalculation, **inputs)
 
-        self.report('launching  Thirdorder Reap Calculation<{}>'.format(running.pk))
+        self.report(
+            'launching  Thirdorder Reap Calculation<{}>'.format(running.pk))
 
         return ToContext(calculation_thirdorder_reap=running)
 
     def inspect_thirdorder_reap(self):
         self.report('output FORCE_CONSTANTS_3RD.')
-        self.out('FORCE_CONSTANTS_3RD', self.ctx.calculation_thirdorder_reap.outputs.FORCE_CONSTANTS_3RD)
+        self.out('FORCE_CONSTANTS_3RD',
+                 self.ctx.calculation_thirdorder_reap.outputs.FORCE_CONSTANTS_3RD)

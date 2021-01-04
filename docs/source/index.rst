@@ -30,6 +30,7 @@ The aiida-shengbte plugin for `AiiDA`_
    :caption: Developments
 
    developer_guide/index
+   developer_guide/developing
 
 .. toctree::
    :maxdepth: 2

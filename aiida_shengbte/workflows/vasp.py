@@ -26,10 +26,10 @@ class ShengBTEVaspWorkChain(BaseWorkChain):
         spec.expose_inputs(ThirdorderWorkChain, namespace='thirdorder',
                            exclude=('structure', 'vasp_settings', 'clean_workdir', 'dry_run'))
         spec.expose_inputs(ShengBTEWorkChain, namespace='shengbte',
-                           exclude=('structure', 'control', 'clean_workdir', 'calculation.FORCE_CONSTANTS_2ND', 'calculation.FORCE_CONSTANTS_3RD'))
+                           exclude=('structure', 'clean_workdir', 'calculation.FORCE_CONSTANTS_2ND', 'calculation.FORCE_CONSTANTS_3RD'))
         spec.input('structure', valid_type=StructureData)
-        spec.input('run_thirdorder', valid_type=Bool, default=lambda: Bool(True),
-                   help='Calculating the third order force constants with thirdorder. Set False to call phono3py.')
+        spec.input('run_thirdorder', valid_type=Bool, default=lambda: Bool(
+            True), help='Calculating the third order force constants with thirdorder. Set False to call phono3py.')
         spec.input('vasp_settings', valid_type=Dict)
         spec.input('dry_run', valid_type=Bool, default=lambda: Bool(False))
 
@@ -57,7 +57,9 @@ class ShengBTEVaspWorkChain(BaseWorkChain):
         """Define the current structure in the context to be the input structure."""
         self.report('initialize')
         base_config = self.inputs.vasp_settings.get_dict().copy()
+        self.ctx.current_structure = self.inputs.structure
         self.ctx.forces_settings = base_config['forces']
+        self.ctx.dry_run = self.inputs.dry_run.value
 
     def run_phonopy(self):
         inputs = AttributeDict(self.exposed_inputs(
@@ -68,7 +70,7 @@ class ShengBTEVaspWorkChain(BaseWorkChain):
 
         running = self.submit(PhonopyWorkChain, **inputs)
 
-        self.ctx.phonopy_supercell_matrix = inputs.phonon_settings.supercell_matrix
+        self.ctx.phonopy_supercell_matrix = inputs.phonon_settings['supercell_matrix']
 
         self.report('launching Phonopy WorkChain<{}>'.format(running.pk))
 
@@ -86,12 +88,15 @@ class ShengBTEVaspWorkChain(BaseWorkChain):
         force_constants = ph_out.force_constants
         from phonopy import file_IO
         from io import BytesIO
-        lines = file_IO.get_FORCE_CONSTANTS_lines(force_constants.get_array(
-            'force_constants'), force_constants.get_array('p2s_map'))
+        try:
+            lines = file_IO.get_FORCE_CONSTANTS_lines(force_constants.get_array(
+                'force_constants'), force_constants.get_array('p2s_map'))
+        except KeyError as err:
+            self.report(err)
+            lines = file_IO.get_FORCE_CONSTANTS_lines(
+                force_constants.get_array('force_constants'))
         FORCE_CONSTANTS_2ND = SinglefileData(BytesIO(
-            bytes('\n'.join(lines), encoding='utf8'),
-            'FORCE_CONSTANTS_2ND'
-        ))
+            bytes('\n'.join(lines), encoding='utf8')), 'FORCE_CONSTANTS_2ND')
         self.ctx.epsilon = ph_out.nac_params.get_array('epsilon')
         self.ctx.born_charges = ph_out.nac_params.get_array('born_charges')
         self.ctx.FORCE_CONSTANTS_2ND = FORCE_CONSTANTS_2ND
@@ -136,7 +141,7 @@ class ShengBTEVaspWorkChain(BaseWorkChain):
         inputs = AttributeDict(self.exposed_inputs(
             ShengBTEWorkChain, namespace='shengbte'))
         inputs.metadata.call_link_label = 'shengbte'
-        inputs.structure = self.ctx.structure
+        inputs.structure = self.ctx.current_structure
         inputs.FORCE_CONSTANTS_3RD = self.ctx.FORCE_CONSTANTS_3RD
         inputs.FORCE_CONSTANTS_2ND = self.ctx.FORCE_CONSTANTS_2ND
         try:
@@ -162,10 +167,12 @@ class ShengBTEVaspWorkChain(BaseWorkChain):
 
     def inspect_shengbte(self):
         if not self.ctx.workchain_shengbte.is_finished_ok:
-            self.report('ShengBTE WorkChain failed with exit status {}'.format(self.ctx.workchain_shengbte.exit_status))
+            self.report('ShengBTE WorkChain failed with exit status {}'.format(
+                self.ctx.workchain_shengbte.exit_status))
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED
 
         self.report('ShengBTE WorkChain succesfully completed.')
         self.out_many(
-            self.exposed_outputs(self.ctx.workchain_shengbte, ShengBTEWorkChain, namespace='shengbte')
+            self.exposed_outputs(self.ctx.workchain_shengbte,
+                                 ShengBTEWorkChain, namespace='shengbte')
         )

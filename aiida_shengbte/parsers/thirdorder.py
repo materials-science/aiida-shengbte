@@ -1,3 +1,4 @@
+from aiida_shengbte.calculations.thirdorder import SinglefileData
 import os
 from aiida.parsers.parser import Parser
 from aiida.engine import ExitCode
@@ -25,7 +26,8 @@ class ThirdorderSowParser(Parser):
             return self.exit_codes.ERROR_NO_OUTPUT
 
         uuid = self.retrieved.uuid
-        node_dirpath = os.path.join('repository', 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
+        node_dirpath = os.path.join(
+            'repository', 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
         self.out('out_path', Str(node_dirpath))
         return ExitCode(0)
 
@@ -43,12 +45,13 @@ class ThirdorderReapParser(Parser):
             return self.exit_codes.ERROR_READING_OUTPUT_FILE
 
         try:
-            with self.retrieved.open('FORCE_CONSTANTS_3RD', 'r') as handle:
-                pass
+            with self.retrieved.open('FORCE_CONSTANTS_3RD', 'rb') as handle:
+                self.out('FORCE_CONSTANTS_3RD', SinglefileData(handle))
         except OSError:
             return self.exit_codes.ERROR_READING_OUTPUT_FILE
 
         uuid = self.retrieved.uuid
-        node_dirpath = os.path.join('repository', 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
+        node_dirpath = os.path.join(
+            'repository', 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
         self.out('out_path', Str(node_dirpath))
         return ExitCode(0)

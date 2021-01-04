@@ -12,6 +12,17 @@ in `AiiDA`_, please make sure it runs and functions as normal on ``mycluster``.
 
 Remember `AiiDA`_ use ``bash`` to implement your codes. So make sure the dependencies and environment have been set correctly (Commonly adding paths of libs in ``<The user's directory you set to login remote computer>/.bashrc``).
 
+prerequisite
+++++++++++++
+
+VASP code
+---------
+`AiiDA VASP code setup`_
+
+Phonopy code
+------------
+`aiida-phonopy`_
+
 Thirdorder
 ++++++++++
 
@@ -75,3 +86,5 @@ In next section we will run a simple test to ensure you have known these concept
 .. _ShengBTE: http://www.shengbte.org/
 .. _Thirdorder: https://bitbucket.org/sousaw/thirdorder/
 .. _Spglib: https://spglib.github.io/spglib/
+.. _Aiida VASP code setup: https://aiida-vasp.readthedocs.io/en/latest/getting_started/code.html
+.. _aiida-phonopy: https://aiida-phonopy.readthedocs.io/en/latest/install.html
