@@ -80,28 +80,28 @@ class ControlParser(object):
             'T_max': {},
             'T_step': {},
             'omega_max': {
-                'default': 1.e100
+                # 'default': 1.e100
             },
             'scalebroad': {
                 'default': 1.0
             },
             'rmin': {
-                'default': 5.0
+                # 'default': 5.0
             },
             'rmax': {
-                'default': 505.0
+                # 'default': 505.0
             },
             'dr': {
-                'default': 100.0
+                # 'default': 100.0
             },
             'maxiter': {
-                'default': 1000
+                # 'default': 1000
             },
             'nticks': {
-                'default': 100
+                # 'default': 100
             },
             'eps': {
-                'default': 1.e-5
+                # 'default': 1.e-5
             },
         },
         'flags': {
@@ -177,8 +177,10 @@ class ControlParser(object):
         valid_dict = {}
         for key in self._CONTROL:
             if key not in valid_control:
+                if key == "flags":
+                    valid_control['flags'] = {}
                 self._logger.error(f'key `{key}` is not in CONTRL')
-                return self.exit_codes.ERROR_KEY_IN_INPUT
+                raise RuntimeError('ERROR_KEY_IN_INPUT')
             valid_dict[key] = valid_control[key]
 
         # orientations is mandatory unless norientations == 0
@@ -210,16 +212,18 @@ class ControlParser(object):
                                 _flat = ' '.join(f'"{i}"' for i in val)
                                 target.write(f'\t{key}={_flat},\n')
                             else:
-                                target.write(f'\t{key}={self._flat_vector(val)},\n')
+                                target.write(
+                                    f'\t{key}={self._flat_vector(val)},\n')
                         elif len(shape) == 2:
-                            vectors = vectors.transpose()
+                            # vectors = vectors.transpose()
                             for i in range(vectors.shape[0]):
                                 target.write(
                                     f'\t{key}(:,{i+1})={self._flat_vector(vectors[i])},\n'
                                 )
                         elif len(shape) == 3:
                             for i in range(shape[0]):
-                                matrix = np.array(vectors[i]).transpose()
+                                # matrix = np.array(vectors[i]).transpose()
+                                matrix = np.array(vectors[i])
                                 for j in range(matrix.shape[0]):
                                     target.write(
                                         f'\t{key}(:,{j+1},{i+1})={self._flat_vector(matrix[j])},\n'

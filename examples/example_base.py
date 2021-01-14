@@ -40,7 +40,7 @@ def test_run(shengbte_code):
         'code': shengbte_code,
         'control': orm.Dict(dict={
             'allocations': {
-                'nelements': 3,
+                'nelements': 2,
                 'natoms': 2,
                 'ngrid': [3, 3, 3],
                 'norientations': 0
@@ -51,10 +51,9 @@ def test_run(shengbte_code):
                     [4, 5, 6],
                     [7, 8, 9]],
                 'types': [1, 2],
-                'elements': ['h', 'i', 'j'],
+                'elements': ['h', 'i'],
                 'positions': [[1, 2, 3],
-                              [4, 5, 6],
-                              [7, 8, 9]],
+                              [4, 5, 6], ],
                 'scell': [3, 3, 3],
                 'born': np.array([
                     [
@@ -67,7 +66,7 @@ def test_run(shengbte_code):
                         [4, 5, 6],
                         [7, 8, 9]
                     ]
-                ])
+                ]),
                 # 'orientations': [3, 2, 1]
             },
             'parameters': {
