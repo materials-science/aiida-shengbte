@@ -67,7 +67,8 @@ class ShengBTECalculation(BaseCalculation):
                        message='The output file contains invalid output.')
 
     def prepare_for_submission(self, tempfolder):
-        self.control_parser = ControlParser(self.inputs.control.get_dict(), self.logger)
+        self.control_parser = ControlParser(
+            self.inputs.control.get_dict(), self.logger)
         try:
             self.control_parser.validate_input()
         except RuntimeError as err:
@@ -98,7 +99,8 @@ class ShengBTECalculation(BaseCalculation):
              self.inputs.FORCE_CONSTANTS_3RD.filename,
              self.get_remote_relative_path(self.inputs.FORCE_CONSTANTS_3RD.filename)),
         ]
-        calcinfo.retrieve_list = [('shengbte/BTE.*', '.', 2), ('shengbte/T*K', '.', 2)]
+        calcinfo.retrieve_list = [
+            ('shengbte/BTE.*', '.', 2), ('shengbte/T*K', '.', 2)]
 
         return calcinfo
 
