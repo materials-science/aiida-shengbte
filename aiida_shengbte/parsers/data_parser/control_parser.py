@@ -176,8 +176,6 @@ class ControlParser(object):
         # ? only available in python version>=3.6
         valid_dict = {}
         for key in self._CONTROL:
-            if key == "flags":
-                continue
             if key not in valid_control:
                 if key == "flags":
                     valid_control['flags'] = {}
