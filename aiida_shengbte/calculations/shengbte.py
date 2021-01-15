@@ -99,8 +99,9 @@ class ShengBTECalculation(BaseCalculation):
              self.inputs.FORCE_CONSTANTS_3RD.filename,
              self.get_remote_relative_path(self.inputs.FORCE_CONSTANTS_3RD.filename)),
         ]
-        calcinfo.retrieve_list = [
-            ('shengbte/BTE.*', '.', 2), ('shengbte/T*K', '.', 2)]
+        # calcinfo.retrieve_list = [('shengbte/BTE.*', '.', 2), ('shengbte/T*K', '.', 2)]
+
+        calcinfo.retrieve_list = [('shengbte', '.', 1)]
 
         return calcinfo
 

@@ -76,6 +76,7 @@ Let us now add the `ShengBTE`_ code, which will call ``ShengBTE`` on remote comp
     Installed on target computer? [True]:
     Computer: mycluster
     Remote absolute path: /workdir/ShengBTE/ShengBTE
+    PREPEND TEXT: cd shengbte
     Success: Code<2> user@mycluster created
 
 You then can add other codes by yourself following above steps.
