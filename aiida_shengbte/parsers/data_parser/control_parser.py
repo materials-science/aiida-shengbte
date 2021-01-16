@@ -1,4 +1,5 @@
 from aiida.common import AIIDA_LOGGER
+from aiida.common.exceptions import NotExistentKeyError
 import numpy as np
 
 
@@ -128,6 +129,12 @@ class ControlParser(object):
             }
         }
     }
+    _CONTROL_OPTIONAL = {
+        'allocations': ['ngrid', 'norientations'],
+        'crystal': ['orientations', 'masses', 'gfactors', 'scell', 'born', 'epsilon', 'lfactor'],
+        'parameters': ['T', 'T_min', 'T_max', 'T_step', 'omega_max', 'scalebroad', 'rmin', 'rmax', 'dr', 'maxiter', 'nticks', 'eps'],
+        'flags': ['espresso', 'nonanalytic', 'convergence', 'isotopes', 'autoisotopes', 'nanowires', 'onlyharmonic']
+    }
 
     def __init__(self, data, logger=None):
         self._logger = AIIDA_LOGGER.getChild(
@@ -236,3 +243,50 @@ class ControlParser(object):
                     else:
                         target.write(f'\t{key}={val},\n')
                 target.write('$end\n')
+
+    def generate_from_structure(self, structure):
+        control = {}
+        allocations = {}
+        crystal = {}
+        flags = {}
+        parameters = {}
+
+        kinds = structure.kinds
+        allocations['nelements'] = len(kinds)
+        allocations['natoms'] = len(structure.get_site_kindnames())
+
+        crystal['elements'] = structure.get_kind_names()
+        sites = structure.sites
+        current_element = sites[0].kind_name
+        current_index = 1
+        positions = []
+        types = []
+        for site in sites:
+            kind = site.kind_name
+            if kind != current_element:
+                current_index += 1
+                current_element = kind
+            types.append(current_index)
+            positions.append(list(site.position))
+
+        crystal['types'] = types
+        crystal['positions'] = positions
+        crystal['lattvec'] = structure.cell
+        crystal['lfactor'] = 0.1
+
+        control.update({
+            'allocations': allocations,
+            'crystal': crystal,
+            'parameters': parameters,
+            'flags': flags
+        })
+
+        _control = self.control
+        for name in _control:
+            for key in _control[name]:
+                if key not in self._CONTROL_OPTIONAL[name]:
+                    self.logger.error(
+                        f'`{key}` is invalid or not need to specify in `control.{name}`')
+                    raise NotExistentKeyError
+                control[name].update({key: _control[name][key]})
+        self.control = control

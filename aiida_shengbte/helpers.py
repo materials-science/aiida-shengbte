@@ -125,8 +125,10 @@ def get_test_structure():
     alat = 3.9
     lattice = np.array([[.5, .5, 0], [0, .5, .5], [.5, 0, .5]]) * alat
     structure = structure_data(cell=lattice)
-    positions = [[0.0, 0.0, 0.0]]
-    for pos_direct in positions:
-        pos_cartesian = np.dot(pos_direct, lattice)
-        structure.append_atom(position=pos_cartesian, symbols='Si')
+    positions = [[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]
+
+    pos_cartesian = np.dot(positions[0], lattice)
+    structure.append_atom(position=pos_cartesian, symbols='In')
+    pos_cartesian = np.dot(positions[1], lattice)
+    structure.append_atom(position=pos_cartesian, symbols='As')
     return structure

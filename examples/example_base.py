@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 """Run a test calculation on localhost.
 
-Usage: ./example_01.py
+Usage: ./example_base.py
 """
 from os import path
 from aiida_shengbte import helpers
@@ -29,10 +29,10 @@ def test_run(shengbte_code):
 
     SinglefileData = DataFactory('singlefile')
     FORCE_CONSTANTS_2ND = SinglefileData(file=path.join(
-        INPUT_DIR, 'file1.txt'),
+        INPUT_DIR, 'FORCE_CONSTANTS_2ND'),
         filename='FORCE_CONSTANTS_2ND')
     FORCE_CONSTANTS_3RD = SinglefileData(file=path.join(
-        INPUT_DIR, 'file2.txt'),
+        INPUT_DIR, 'FORCE_CONSTANTS_3RD'),
         filename='FORCE_CONSTANTS_3RD')
 
     import numpy as np
@@ -43,37 +43,41 @@ def test_run(shengbte_code):
                 'nelements': 2,
                 'natoms': 2,
                 'ngrid': [3, 3, 3],
-                'norientations': 0
+                'norientations': 3
             },
             'crystal': {
                 'lattvec': [
-                    [1, 2, 3],
-                    [4, 5, 6],
-                    [7, 8, 9]],
+                    [0, 0.5, 0.5],
+                    [0.5, 0, 0.5],
+                    [0.5, 0.5, 0]],
+                'elements': ['In', 'As'],
                 'types': [1, 2],
-                'elements': ['h', 'i'],
-                'positions': [[1, 2, 3],
-                              [4, 5, 6], ],
-                'scell': [3, 3, 3],
-                'born': np.array([
+                'positions': [
+                    [0, 0, 0],
+                    [0.25, 0.25, 0.25]
+                ],
+                'scell': [5, 5, 5],
+                'born': [
                     [
-                        [1, 2, 3],
-                        [4, 5, 6],
-                        [7, 8, 9]
+                        [2.67810, 0, 0],
+                        [0, 2.67810, 0],
+                        [0, 0, 2.67810]
                     ],
                     [
-                        [1, 2, 3],
-                        [4, 5, 6],
-                        [7, 8, 9]
+                        [-2.67810, 0, 0],
+                        [0, -2.67810, 0],
+                        [0, 0, -2.67810]
                     ]
-                ]),
-                # 'orientations': [3, 2, 1]
+                ],
+                'orientations': [[1, 0, 0], [1, 1, 0], [1, 1, 1]]
             },
             'parameters': {
-                'T': 5,
+                'T': 300,
             },
             'flags': {
-                'espresso': True
+                'espresso': False,
+                'nonanalytic': True,
+                'nanowires': True
             }
         }),
         'FORCE_CONSTANTS_2ND': FORCE_CONSTANTS_2ND,

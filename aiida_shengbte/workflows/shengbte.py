@@ -18,7 +18,7 @@ class ShengBTEWorkChain(BaseWorkChain):
         'allocations': ['ngrid', 'norientations'],
         'crystal': ['orientations', 'masses', 'gfactors', 'scell', 'born', 'epsilon', 'lfactor'],
         'parameters': ['T', 'T_min', 'T_max', 'T_step', 'omega_max', 'scalebroad', 'rmin', 'rmax', 'dr', 'maxiter', 'nticks', 'eps'],
-        'flag': ['espresso', 'nonanalytic', 'convergence', 'isotopes', 'autoisotopes', 'nanowires', 'onlyharmonic']
+        'flags': ['espresso', 'nonanalytic', 'convergence', 'isotopes', 'autoisotopes', 'nanowires', 'onlyharmonic']
     }
 
     @classmethod
@@ -86,7 +86,8 @@ class ShengBTEWorkChain(BaseWorkChain):
         for name in _control:
             for key in _control[name]:
                 if key not in self._CONTROL_OPTIONAL[name]:
-                    self.logger.error(f'`{key}` is invalid or not need to specify in `control.{name}`')
+                    self.logger.error(
+                        f'`{key}` is invalid or not need to specify in `control.{name}`')
                     return self.exit_codes.ERROR_KEY_IN_INPUT
                 control[name].update({key: _control[name][key]})
 
@@ -94,7 +95,8 @@ class ShengBTEWorkChain(BaseWorkChain):
 
     def run_shengbte(self):
         """Run shengbte calculation"""
-        inputs = AttributeDict(self.exposed_inputs(ShengBTECalculation, namespace='calculation'))
+        inputs = AttributeDict(self.exposed_inputs(
+            ShengBTECalculation, namespace='calculation'))
         inputs.metadata.call_link_label = 'shengbte_calculation'
         inputs.control = self.ctx.control
 
@@ -109,7 +111,8 @@ class ShengBTEWorkChain(BaseWorkChain):
             self.report('ShengBTE calculation succesfully completed.')
             self.report(self.ctx.calculation_shengbte.outputs.out_path)
             self.out_many(
-                self.exposed_outputs(self.ctx.calculation_shengbte, ShengBTECalculation)
+                self.exposed_outputs(
+                    self.ctx.calculation_shengbte, ShengBTECalculation)
             )
         else:
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED_SHENGBTE_CALCULATION

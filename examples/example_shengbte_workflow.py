@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 """Run a test calculation on localhost.
 
-Usage: ./example_01.py
+Usage: ./example_shengbte_workflow.py
 """
 from os import path
 from aiida_shengbte import helpers
@@ -23,30 +23,32 @@ def test_run(shengbte_code=None):
     """
     computer = helpers.get_computer()
     if not shengbte_code:
-        shengbte_code = helpers.get_code(entry_point='shengbte', computer=computer)
+        shengbte_code = helpers.get_code(
+            entry_point='shengbte', computer=computer)
     # set up calculation
     SinglefileData = DataFactory('singlefile')
     FORCE_CONSTANTS_2ND = SinglefileData(file=path.join(
-        INPUT_DIR, 'file1.txt'),
+        INPUT_DIR, 'FORCE_CONSTANTS_2ND'),
         filename='FORCE_CONSTANTS_2ND')
     FORCE_CONSTANTS_3RD = SinglefileData(file=path.join(
-        INPUT_DIR, 'file2.txt'),
+        INPUT_DIR, 'FORCE_CONSTANTS_3RD'),
         filename='FORCE_CONSTANTS_3RD')
     inputs = {
         'structure': helpers.get_test_structure(),
         'control': Dict(dict={
             'allocations': {
                 'ngrid': [3, 3, 3],
-                'norientations': 0
+                'norientations': 3
             },
             'crystal': {
-                'orientations': [3, 2, 1],
-                'scell': [3, 3, 3]
+                'orientations': [[1, 0, 0], [1, 1, 0], [1, 1, 1]],
+                'scell': [5, 5, 5]
             },
             'parameters': {
-                'T_min': 0,
-                'T_max': 0,
-                'T_step': 0,
+                'T': 300,
+                # 'T_min': 0,
+                # 'T_max': 0,
+                # 'T_step': 0,
             },
         }),
         'calculation': {
@@ -56,10 +58,9 @@ def test_run(shengbte_code=None):
         },
         # 'clean_workdir': orm.Bool(True),
         'metadata': {
-            'description': "Test job submission with the aiida_shengbte thirdorder plugin",
+            'description': "Test job submission with the aiida_shengbte base workflow plugin",
         },
     }
-    logging.error(inputs)
     result = engine.run(WorkflowFactory('shengbte.shengbte'), **inputs)
 
     logging.info(result)
