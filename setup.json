@@ -30,16 +30,18 @@
 			"thirdorder_sow = aiida_shengbte.parsers.thirdorder:ThirdorderSowParser",
 			"thirdorder_reap = aiida_shengbte.parsers.thirdorder:ThirdorderReapParser"
 		],
-		"aiida.cmdline.data": ["diff = aiida_shengbte.cli:data_cli"]
+		"console_scripts": [
+            "aiida-shengbte = aiida_shengbte.cli:cmd_root"
+        ]
 	},
 	"include_package_data": true,
 	"setup_requires": ["reentry"],
 	"reentry_register": true,
 	"install_requires": [
 		"aiida-core>=1.1.0,<2.0.0",
-		"aiida-phonopy",
-		"aiida-quantumespresso",
-		"aiida-vasp",
+		"aiida-phonopy~=0.3",
+		"aiida-quantumespresso>=3.0.0a6,<=3.3.0",
+		"aiida-vasp>=2.0.0,<=2.0.1",
         "ase",
 		"six",
 		"voluptuous"

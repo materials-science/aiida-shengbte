@@ -12,7 +12,7 @@ class ThirdorderSowParser(Parser):
     def parse(self, **kwargs):
         """Parse the contents of the output files stored in the `retrieved` output node."""
         try:
-            with self.retrieved.open('_scheduler-stderr.txt', 'r') as handle:
+            with self.retrieved.open("_scheduler-stderr.txt", "r") as handle:
                 result = handle.read()
                 self.logger.warning(result)
         except OSError:
@@ -27,8 +27,9 @@ class ThirdorderSowParser(Parser):
 
         uuid = self.retrieved.uuid
         node_dirpath = os.path.join(
-            'repository', 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
-        self.out('out_path', Str(node_dirpath))
+            "repository", "node", uuid[:2], uuid[2:4], uuid[4:], "path"
+        )
+        self.out("outpath", Str(node_dirpath))
         return ExitCode(0)
 
 
@@ -38,20 +39,21 @@ class ThirdorderReapParser(Parser):
     def parse(self, **kwargs):
         """Parse the contents of the output files stored in the `retrieved` output node."""
         try:
-            with self.retrieved.open('_scheduler-stderr.txt', 'r') as handle:
+            with self.retrieved.open("_scheduler-stderr.txt", "r") as handle:
                 result = handle.read()
                 self.logger.warning(result)
         except OSError:
             return self.exit_codes.ERROR_READING_OUTPUT_FILE
 
         try:
-            with self.retrieved.open('FORCE_CONSTANTS_3RD', 'rb') as handle:
-                self.out('FORCE_CONSTANTS_3RD', SinglefileData(handle))
+            with self.retrieved.open("FORCE_CONSTANTS_3RD", "rb") as handle:
+                self.out("FORCE_CONSTANTS_3RD", SinglefileData(handle))
         except OSError:
             return self.exit_codes.ERROR_READING_OUTPUT_FILE
 
         uuid = self.retrieved.uuid
         node_dirpath = os.path.join(
-            'repository', 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
-        self.out('out_path', Str(node_dirpath))
+            "repository", "node", uuid[:2], uuid[2:4], uuid[4:], "path"
+        )
+        self.out("outpath", Str(node_dirpath))
         return ExitCode(0)

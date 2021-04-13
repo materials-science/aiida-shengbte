@@ -72,10 +72,19 @@ For more information, see the [developer guide](https://aiida-diff.readthedocs.i
 
 -   `DiffParameters` dictionaries are validated using [voluptuous](https://github.com/alecthomas/voluptuous).
     Find out about supported options:
+
     ```python
     DiffParameters = DataFactory('shengbte')
     print(DiffParameters.schema.schema)
     ```
+
+-   [ ] ShengBTE Vasp WorkChain
+    -   [ ] Covergence criterion
+    -   [ ] set potential_mapping for vasp automatically
+    -   [ ] set proper parameters of phonopy and vasp
+-   [ ] ShengBTE QE WorkChain
+-   [ ] tools
+    -   [ ] transform `control dict` file to ShengBTE `CONTROL` file or reversely
 
 ## Installation
 
@@ -99,7 +108,7 @@ A quick demo of how to submit a calculation:
 verdi daemon start     # make sure the daemon is running
 cd examples
 ./example_01.py        # run test calculation
-verdi process list -a  # check record of calculation
+verdi process list -a  # check record of the calculation
 ```
 
 The plugin also includes verdi commands to inspect its data types:
@@ -109,7 +118,7 @@ verdi data shengbte list
 verdi data shengbte export <PK>
 ```
 
-## Development
+## Notes
 
 ```shell
 git clone https://github.com/PorYoung/aiida-shengbte .
@@ -250,11 +259,7 @@ _CONTROL = {
 }
 ```
 
-### dev docs
-
-#### Notes
-
-##### Retrieve List
+#### Retrieve List
 
 [About Retrieve List of CalcJob](https://aiida.readthedocs.io/projects/aiida-core/en/latest/_modules/aiida/common/datastructures.html?highlight=retrieve_list#)
 
@@ -314,7 +319,7 @@ See the [developer guide](http://aiida-shengbte.readthedocs.io/en/latest/develop
 
 ##### Outputs
 
-#### Issues
+## Issues
 
 1. ShengBTE 真实环境计算流程（如改变温度）
 2. 计算结果的存储
@@ -342,6 +347,36 @@ def get_node_repository_sub_folder(uuid):
 
     return node_dirpath
 ```
+
+### ShengBTE Vasp WorkChain
+
+#### Bugs
+
+1. Vasp failed with code 7 when 'tot_num_mpiprocs' set to 30
+2. ShengBTEVaspWorkflow cannot run correctly while using `submit` rather than `run`. (some Vasp calculations failed and exited)
+
+    After submitting the workflow, all the calculations will start at the same time using the number of processes defined, so some will crash. So if the hpc has a job management system such as Torque or has sufficient processes, it would be ok.
+
+### ThirdOrder Reap Calculation
+
+#### Error handle
+
+1. Warning: supercell too small to find n-th neighbors
+
+## Schedules
+
+### Test
+
+-   [ ] Test current Calculations
+
+    -   [ ] Thirdorder Sow
+    -   [ ] Thirdorder Reap
+    -   [ ] ShengBTE Calculation
+
+-   [ ] Test current Workflows
+    -   [ ] Thirdorder WorkChain
+    -   [ ] ShengBTE WorkChain
+    -   [ ] ShengBTE Vasp WorkChain
 
 ## License
 

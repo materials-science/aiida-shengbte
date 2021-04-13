@@ -19,6 +19,8 @@ class ShengBTEParser(Parser):
         #     return self.exit_codes.ERROR_INVALID_OUTPUT
 
         uuid = self.retrieved.uuid
-        node_dirpath = os.path.join('repository', 'node', uuid[:2], uuid[2:4], uuid[4:], 'path')
-        self.out('out_path', Str(node_dirpath))
+        node_dirpath = os.path.join(
+            "repository", "node", uuid[:2], uuid[2:4], uuid[4:], "path"
+        )
+        self.out("outpath", Str(node_dirpath))
         return ExitCode(0)
