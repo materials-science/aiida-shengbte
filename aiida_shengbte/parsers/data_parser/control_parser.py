@@ -267,10 +267,10 @@ class ControlParser(object):
                 current_index += 1
                 current_element = kind
             types.append(current_index)
-            positions.append(list(site.position))
+#             positions.append(list(site.position))
 
         crystal['types'] = types
-        crystal['positions'] = positions
+        crystal['positions'] = structure.get_ase().get_scaled_positions().tolist()
         crystal['lattvec'] = structure.cell
         crystal['lfactor'] = 0.1
 
